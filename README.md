@@ -79,25 +79,53 @@ Spring Security es el marco de referencia para implementar autenticación y auto
 ##### Pasos para implementar la autenticación:
 1. **Configurar la seguridad de Springboot**: Configure la clase de configuración de seguridad para manejar la autenticación y la autorización.
 2. **Crear entidad de usuario**: Defina una entidad "Usuario" para almacenar credenciales y roles de usuario.
-3. **Implementar clases de utilidad JWT**: Cree clases de utilidad para generar y validar tokens JWT.
-4. **Configurar controladores**: Desarrollar controladores para el registro e inicio de sesión de usuarios.
+3. **Configurar controladores**: Desarrollar controladores para el registro e inicio de sesión de usuarios.
 
 #### Fragmento de código de ejemplo para configuración de seguridad:
 ```java
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated();
-    }
+package com.jchapp.community.TaxiApp;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig {
+
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+			.authorizeHttpRequests((requests) -> requests
+				.requestMatchers("/", "/home").permitAll()
+				.anyRequest().authenticated()
+			)
+			.formLogin((form) -> form
+				.loginPage("/acceso")
+				.permitAll()
+			)
+			.logout((logout) -> logout.permitAll());
+
+		return http.build();
+	}
+
+	@Bean
+	public UserDetailsService userDetailsService() {
+		UserDetails user =
+			 User.withDefaultPasswordEncoder()
+				.username("usuario")
+				.password("clave")
+				.roles("GERENTE")
+				.build();
+
+		return new InMemoryUserDetailsManager(user);
+	}
 }
 ```
 
@@ -105,75 +133,76 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 Drivers are a crucial component of the taxi service. The app should allow administrators to add, update, and remove driver profiles, as well as view their details and performance metrics.
 
-##### Steps to Implement Driver Management:
-1. **Create Driver Entity**: Define a `Driver` entity with fields such as name, contact information, license details, and status.
-2. **Develop Driver Service**: Implement the business logic for managing drivers.
-3. **Set Up Driver Controller**: Create RESTful endpoints for driver management operations.
+##### Pasos para implementar la gestión de conductores:
+1. **Crear entidad del conductor**: Defina una entidad "Conductor" con campos como nombre, información de contacto, detalles de la licencia y estado.
+2. **Desarrollar el servicio de conductor**: Implementar la lógica de negocios para la gestión de conductores.
+3. **Configurar el controlador del controlador**: Cree api endpoints RESTful para operaciones de gestión de conductores.
 
 #### Example Code Snippet for Driver Entity:
 ```java
 @Entity
-public class Driver {
+public class Conductor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String contactInfo;
-    private String licenseDetails;
-    private String status;
+    private String nombre;
+    private String direccion;
+    private String cedula;
+    private String estado;
 
     // Getters and Setters
 }
 ```
 
-#### 4.3 Fleet Management
+#### 4.3 Gestión de flotas
 
-Fleet management involves keeping track of all vehicles, their maintenance schedules, and availability.
+La gestión de flotas implica realizar un seguimiento de todos los vehículos, sus programas de mantenimiento y su disponibilidad.
 
-##### Steps to Implement Fleet Management:
-1. **Create Vehicle Entity**: Define a `Vehicle` entity with fields such as make, model, year, license plate, and status.
+##### Pasos para implementar la gestión de flotas:
+1. **Crear entidad de vehículo**: Defina una entidad "Vehículo" con campos como marca, modelo, año, matrícula y estado.
 2. **Develop Vehicle Service**: Implement the business logic for managing vehicles.
 3. **Set Up Vehicle Controller**: Create RESTful endpoints for vehicle management operations.
 
 #### Example Code Snippet for Vehicle Entity:
 ```java
 @Entity
-public class Vehicle {
+public class Vehiculo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String make;
-    private String model;
-    private int year;
-    private String licensePlate;
-    private String status;
+    private String marca;
+    private String modelo;
+    private int año;
+    private string motor;
+    private String placa;
+    private String estado;
 
     // Getters and Setters
 }
 ```
 
-#### 4.4 Ride Management
+#### 4.4 Gestión de viajes
 
-Administrators need to monitor and manage ride bookings, including ride statuses, cancellations, and assignments.
+Los administradores deben monitorear y administrar las reservas de viajes, incluidos los estados, cancelaciones y asignaciones de los viajes.
 
-##### Steps to Implement Ride Management:
-1. **Create Ride Entity**: Define a `Ride` entity with fields such as passenger details, driver details, vehicle details, start and end locations, and status.
-2. **Develop Ride Service**: Implement the business logic for managing rides.
-3. **Set Up Ride Controller**: Create RESTful endpoints for ride management operations.
+##### Pasos para implementar la gestión de viajes:
+1. **Crear entidad de viaje**: Defina una entidad "Viaje" con campos como detalles del pasajero, detalles del conductor, detalles del vehículo, ubicaciones de inicio y finalización y estado.
+2. **Desarrollar el servicio de viaje**: Implementar la lógica de negocios para la gestión de viajes.
+3. **Set Up Ride Controller**: Cree endpoints RESTful para las operaciones de gestión de viajes.
 
-#### Example Code Snippet for Ride Entity:
+#### Fragmento de código de ejemplo para entidad de viaje:
 ```java
 @Entity
-public class Ride {
+public class Viaje {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String passengerDetails;
-    private String driverDetails;
-    private String vehicleDetails;
-    private String startLocation;
-    private String endLocation;
-    private String status;
+    private String nombreDelPasajero;
+    private String nombreDelConductor;
+    private String vehiulo;
+    private String lugarInicio;
+    private String lugarFinal;
+    private String estado;
 
     // Getters and Setters
 }

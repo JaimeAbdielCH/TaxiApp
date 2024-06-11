@@ -34,7 +34,7 @@ Spring Boot, con su enfoque de convención sobre configuración, simplifica el p
 
 ---
 
-### 2. Setting Up the Development Environment
+### 2. Configurar el entorno de desarrollo
 
 Para comenzar a desarrollar la aplicación Taxi Administrator, asegúrese de tener instaladas las siguientes herramientas:
 
@@ -47,9 +47,9 @@ Cree un nuevo proyecto Spring Boot usando Spring Initializr con dependencias com
 
 ---
 
-### 3. Defining the Application Architecture
+### 3. Definición de la arquitectura de la aplicación
 
-The architecture of the Taxi Administrator App is typically layered, consisting of:
+La arquitectura de la aplicación Taxi Administrator suele ser en capas y consta de:
 
 - **Controller Layer**: Maneja las solicitudes y respuestas HTTP.
 - **Service Layer**: Contiene la lógica de negocios.
@@ -101,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
-#### 4.2 Driver Management
+#### 4.2 Gestión de conductores
 
 Drivers are a crucial component of the taxi service. The app should allow administrators to add, update, and remove driver profiles, as well as view their details and performance metrics.
 
